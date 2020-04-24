@@ -1,7 +1,7 @@
 clc; close all;
 %**************** Punto 1 *************************
 %Funciones continuas
-t=-6:0.01:10; %base temporal de seï¿½ales continuas
+t=-6:0.01:10; %base temporal de señales continuas
 x1t=6*sin(2*pi*t);
 x2t=5*ustep(t-3);
 x3t=4*tri((t+2)/4);
@@ -81,13 +81,13 @@ N1=lcm(4,12)
 N2=lcm(4,10)
 N3=lcm(16,10)
 
-%Laboratorio Nï¿½ 1 - Ejercicio 3
-%Operaciones Bï¿½sicas con Seï¿½ales Discretas
+%Laboratorio Nº 1 - Ejercicio 3
+%Operaciones Básicas con Señales Discretas
 %---------------------------------------------------------------
-% Inicializaciï¿½n
+% Inicialización
 clear all;
 close all;
-% Adquisiciï¿½n de audio con Fs
+% Adquisición de audio con Fs
 Fs=11025; % Este valor puede ser modificado para experimentar
 r=audiorecorder(Fs,8,1);%estas tres lineas
 recordblocking(r,3)     %reemplazan al comando
@@ -96,7 +96,7 @@ soundsc(x, Fs);
 input('sonido original');
 N = length(x);
 %---------------------------------------------------------------
-% Generaciï¿½n de eco mediante la suma de la versiï¿½n retrasada de la seï¿½al.
+% Generación de eco mediante la suma de la versión retrasada de la señal.
 delay = 0.4 % Este valor puede ser modificado para experimentar
 atten = 0.5 % Este valor puede ser modificado para experimentar
 n0 = round(delay.*Fs)
@@ -117,7 +117,7 @@ xlabel('t seg');
 title('Sonido con Eco');
 soundsc(y,Fs);
 %---------------------------------------------------------------
-% Reflexiï¿½n
+% Reflexión
 n = 1:1:N;
 minus_n = N+1 - n;
 z = x(minus_n);
@@ -134,8 +134,8 @@ xlabel('t seg');
 title('Sonido Reflejado');
 soundsc(z,Fs);
 %---------------------------------------------------------------
-% Submuestreo por 2 - Decimaciï¿½n
-%Procesamiento Digital de Seï¿½ales Ciclo 2020 Laboratorio 1
+% Submuestreo por 2 - Decimación
+%Procesamiento Digital de Señales Ciclo 2020 Laboratorio 1
 z = zeros(1,N);
 z(1:ceil(N/2)) = x(1:2:N);
 z(ceil(N/2)+1:N) = zeros(1,N-ceil(N/2));
