@@ -363,15 +363,15 @@ Netnames pin1="R13_N" pin2="R14_N"
 .EndInstance
 .Instance
 Attributes type=symbol name="probe_fourier_voltage" selected=0 protected=0 x=3240 y=480 orient=N0 
-Property name="FOURIER_PARAMS" value="xlog=lin fundamental=3.33333333333331k minFreq=0 maxFreq=1Meg interpPoints=4096 interpOrder=2 method=continuous window=rectangular dataStart=0.0101 dataEnd=0.0104 specSpan=false knowFund=false interval=3.3333333k plottype=db runTimeCalculationTimeLimit=5 defaultFrequency=true numdivisions=1" autopos=0 x=-240 y=1740 align=LeftTop visible=0 linear=1 font=Default order=-1
+Property name="FOURIER_PARAMS" value="xlog=lin fundamental=3.33333333333331k minFreq=0 maxFreq=1Meg interpPoints=4096 interpOrder=2 method=continuous window=rectangular dataStart=0.0101 dataEnd=0.0104 specSpan=false knowFund=false interval=3.3333333k plottype=mag runTimeCalculationTimeLimit=5 defaultFrequency=true numdivisions=1" autopos=0 x=-240 y=1740 align=LeftTop visible=0 linear=1 font=Default order=-1
 Property name="Label" value="{ParseParameterString('%value%', 'curvelabel', 'read','','allowquoted')}" autopos=1 normal=Top rotated=Right linear=1 font=Default resolveSymbolic=1 order=-1
 Property name="PROBE_DISABLED" value="false" autopos=0 x=-240 y=1340 align=LeftTop visible=0 font=Default order=-1
 Property name="REF" value="Probe2" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
-Property name="SIMPLIS_SPECTRUM" value="SpectrumUniv(:<probe[1]>, [1,2,1,3.3333333k,0,1Meg,0,3.33333333333331k,4096,2,1,0.0101,0.0104,0,5])" autopos=0 x=-240 y=1600 align=LeftTop visible=0 linear=1 font=Default resolveSymbolic=1 order=-1
-Property name="Spectrum" value="SpectrumUniv(<node[1]>, [1,2,1,3.3333333k,0,1Meg,0,3.33333333333331k,4096,2,1,0.0101,0.0104,0,5])" autopos=0 x=-240 y=1480 align=LeftTop visible=0 linear=1 font=Default resolveSymbolic=1 order=-1
+Property name="SIMPLIS_SPECTRUM" value="SpectrumUniv(:<probe[1]>, [1,1,1,3.3333333k,0,1Meg,0,3.33333333333331k,4096,2,1,0.0101,0.0104,0,5])" autopos=0 x=-240 y=1600 align=LeftTop visible=0 linear=1 font=Default resolveSymbolic=1 order=-1
+Property name="Spectrum" value="SpectrumUniv(<node[1]>, [1,1,1,3.3333333k,0,1Meg,0,3.33333333333331k,4096,2,1,0.0101,0.0104,0,5])" autopos=0 x=-240 y=1480 align=LeftTop visible=0 linear=1 font=Default resolveSymbolic=1 order=-1
 Property name="StyleNormal" value="DefaultInstance" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
 Property name="StyleSelected" value="DefaultSelected" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
-Property name="VALUE" value="persistence=-1 graphName=fourier axisType=auto curveLabel=Spectrum yUnit=dB yLog=lin analysis=tran complete=true xLog=lin disabled=false useNameAsTitle=false" autopos=0 x=1023 y=-168 align=LeftTop visible=0 linear=1 font=Default order=-1
+Property name="VALUE" value="persistence=-1 graphName=fourier axisType=auto curveLabel=Spectrum yLog=lin analysis=tran complete=true xLog=lin disabled=false useNameAsTitle=false" autopos=0 x=1023 y=-168 align=LeftTop visible=0 linear=1 font=Default order=-1
 Netnames pin1="R13_N"
 .EndInstance
 .Instance
@@ -560,16 +560,16 @@ Property name="MODEL" value="R" autopos=1 normal=Left rotated=Left visible=0 fon
 Property name="REF" value="R8" autopos=1 normal=Right rotated=Bottom font=Default order=-1
 Property name="StyleNormal" value="DefaultInstance" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
 Property name="StyleSelected" value="DefaultSelected" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
-Property name="value" value="750" autopos=1 normal=Right rotated=Top font=Default order=-1
+Property name="value" value="10k" autopos=1 normal=Right rotated=Top font=Default order=-1
 Netnames pin1="R8_P" pin2="R8_N"
 .EndInstance
 .Instance
-Attributes type=symbol name="res" selected=1 protected=0 x=-120 y=1200 orient=N0 
+Attributes type=symbol name="res" selected=0 protected=0 x=-120 y=1200 orient=N0 
 Property name="MODEL" value="R" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
 Property name="REF" value="R9" autopos=1 normal=Right rotated=Bottom font=Default order=-1
 Property name="StyleNormal" value="DefaultInstance" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
 Property name="StyleSelected" value="DefaultSelected" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
-Property name="value" value="750" autopos=1 normal=Right rotated=Top font=Default order=-1
+Property name="value" value="10k" autopos=1 normal=Right rotated=Top font=Default order=-1
 Netnames pin1="R9_P" pin2="R9_N"
 .EndInstance
 .Instance
@@ -591,17 +591,17 @@ Property name="REF" value="V2" autopos=1 normal=Right rotated=Bottom font=Defaul
 Netnames pin1="R6_P" pin2="0"
 .EndInstance
 .Instance
-Attributes type=symbol name="Potentiometer" selected=0 protected=0 x=-480 y=1800 orient=N90 
+Attributes type=symbol name="Potentiometer" selected=1 protected=0 x=-480 y=1800 orient=N90 
 Property name="MODEL" value="X" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
 Property name="REF" value="VR1" autopos=1 normal=Left rotated=Top font=Default order=-1
-Property name="res" value="5k" autopos=1 normal=Left rotated=Top font=Default order=-1
+Property name="res" value="50k" autopos=1 normal=Left rotated=Top font=Default order=-1
 Property name="RunSim" value="1" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
 Property name="step" value="0.05" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
 Property name="StyleNormal" value="DefaultInstance" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
 Property name="StyleSelected" value="DefaultSelected" autopos=1 normal=Left rotated=Left visible=0 font=Default order=-1
 Property name="TEMPLATE" value="<ref> <nodelist>  %REF%$TP_POT <pinnames>;.subckt %REF%$TP_POT 1 2 3;R1 1 2 {%RES%*(1-%VALUE%)};R2 2 3 {%RES%*%VALUE%};.ENDS" autopos=0 x=-240 y=960 align=LeftBase visible=0 font=Default order=-1
-Property name="value" value="834m" autopos=1 normal=Left rotated=Top visible=0 font=Default order=-1
-Property name="wiper" value="83.4%" autopos=1 normal=Left rotated=Top font=Default order=-1
+Property name="value" value="1" autopos=1 normal=Left rotated=Top visible=0 font=Default order=-1
+Property name="wiper" value="100%" autopos=1 normal=Left rotated=Top font=Default order=-1
 Netnames pin1="R9_N" pin2="VR1_Wiper" pin3="R8_N"
 .EndInstance
 Wire x1=-2160 y1=360 x2=-2160 y2=480 net="Portadora_P" branch="+:Portadora#P"
@@ -1345,9 +1345,9 @@ Property name="minFreq" value="550k" type=value
 Property name="PlaceSymbol" value="Potentiometer" type=value
 Property name="plottype" value="mag" type=value
 Property name="specSpan" value="false" type=value
-Property name="UserVersion" value="10" type=value
+Property name="UserVersion" value="11" type=value
 Property name="window" value="hanning" type=value
-Property name="WriteLog" value="10/10/32255/32255" type=value
+Property name="WriteLog" value="11/11/32381/32381" type=value
 Property name="xlog" value="lin" type=value
 .EndSchematic
 .EndComponent
