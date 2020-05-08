@@ -17,7 +17,7 @@ stem(nx,x);
 title('Grafica de x[n]');grid on;
 figure('Name','Grafica de h[n]');
 stem(nh,h);
-title('Grafica de x[n]');grid on;ylim([-6 1]);
+title('Grafica de h[n]');grid on;ylim([-6 1]);
 
 %punto 1.2:
 y1=convnum(x,h);
@@ -59,10 +59,10 @@ plot(ny1,y1-y2);title('y1[n]-y2[n]=0');
 Dif=length(nx)+length(nh)-1-l1
 %Se comprueba que el resultado es 0
 
-%punto 1.5: verificar propiedad suma?
-sy3=sum(y3);   %la suma de todos los valores de y3
-sxx=sum(x)^2;  %la suma de todos los valores de x al cuadrado    
-Dif=sy3-sxx
+%punto 1.5: verificar propiedad suma
+sy4=sum(y4);   %la suma de todos los valores de y4
+shh=sum(h)^2;  %la suma de todos los valores de x al cuadrado    
+Dif=sy4-shh
 
 %%%%%%punto 2 %%%%%%%%%%%%%%%%
 % punto 2.1:
