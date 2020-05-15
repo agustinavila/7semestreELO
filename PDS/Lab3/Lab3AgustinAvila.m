@@ -2,7 +2,7 @@
 clc;close all;
 %% punto 1
 %declaraciones temporales
-F=10;
+F=100;
 t=0:1/F:5;
 tcorr=-5:1/F:5;
 %declaracion de funciones
@@ -15,19 +15,17 @@ x6=urect((t-2.5)/.5);
 x7=3*exp(-5*t);
 x8=randn(1,length(t));
 %% 1)a: obtencion y graficacion de correlaciones
-% xx1=grafcorr(x1,t,tcorr,'x1(t)');
-% xx2=grafcorr(x2,t,tcorr,'x2(t)');
-% xx3=grafcorr(x3,t,tcorr,'x3(t)');
-% xx4=grafcorr(x4,t,tcorr,'x4(t)');
-% xx5=grafcorr(x5,t,tcorr,'x5(t)');
-% xx6=grafcorr(x6,t,tcorr,'x6(t)');
-% xx7=grafcorr(x7,t,tcorr,'x7(t)');
-% xx8=grafcorr(x8,t,tcorr,'x8(t)');
-
-%% 1.b
+xx1=grafcorr(x1,t,tcorr,'x1(t)');
+xx2=grafcorr(x2,t,tcorr,'x2(t)');
+xx3=grafcorr(x3,t,tcorr,'x3(t)');
+xx4=grafcorr(x4,t,tcorr,'x4(t)');
+xx5=grafcorr(x5,t,tcorr,'x5(t)');
+xx6=grafcorr(x6,t,tcorr,'x6(t)');
+xx7=grafcorr(x7,t,tcorr,'x7(t)');
+xx8=grafcorr(x8,t,tcorr,'x8(t)');
 
 
-%% punto 2:
+%% 1.e
 F0=1e8;
 T0=1/F0;
 
@@ -41,6 +39,8 @@ plot((1:N)*T0,p);axis([0 N*T0 -10 10]);
 xlabel('tiempo');ylabel('p(t)');
 title('pulso de radar transmitido');
 
+
+%% punto 2
 
 
 %% funciones auxiliares:
