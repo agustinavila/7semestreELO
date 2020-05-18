@@ -15,30 +15,47 @@ x6=urect((t-2.5)/.5);
 x7=3*exp(-5*t);
 x8=randn(1,length(t));
 %% 1)a: obtencion y graficacion de correlaciones
-% xx1=grafcorr(x1,t,tcorr,'x1(t)');
-% xx2=grafcorr(x2,t,tcorr,'x2(t)');
-% xx3=grafcorr(x3,t,tcorr,'x3(t)');
-% xx4=grafcorr(x4,t,tcorr,'x4(t)');
-% xx5=grafcorr(x5,t,tcorr,'x5(t)');
-% xx6=grafcorr(x6,t,tcorr,'x6(t)');
-% xx7=grafcorr(x7,t,tcorr,'x7(t)');
-% xx8=grafcorr(x8,t,tcorr,'x8(t)');
+xx1=grafcorr(x1,t,tcorr,'x1(t)');
+xx2=grafcorr(x2,t,tcorr,'x2(t)');
+xx3=grafcorr(x3,t,tcorr,'x3(t)');
+xx4=grafcorr(x4,t,tcorr,'x4(t)');
+xx5=grafcorr(x5,t,tcorr,'x5(t)');
+xx6=grafcorr(x6,t,tcorr,'x6(t)');
+xx7=grafcorr(x7,t,tcorr,'x7(t)');
+xx8=grafcorr(x8,t,tcorr,'x8(t)');
 
-
-%% 1.e
-% F0=1e8;
-% T0=1/F0;
-% 
-% %%%generacion de señal
-% duracion=500; comienzo=400; resto=400;
-% N=comienzo+duracion+resto;
-% signal=randn(1,duracion);
-% p=[zeros(1,comienzo),signal,zeros(1,resto)];
-% figure();
-% plot((1:N)*T0,p);axis([0 N*T0 -10 10]);
-% xlabel('tiempo');ylabel('p(t)');
-% title('pulso de radar transmitido');
-
+% 1.e
+F0=1e8;
+T0=1/F0;
+%%%generacion de señal
+duracion=500; comienzo=400; resto=400;
+N=comienzo+duracion+resto;
+t1=0:T0:T0*(N-1);
+signal=randn(1,duracion);
+p=[zeros(1,comienzo),signal,zeros(1,resto)];
+figure();
+plot((1:N)*T0,p);axis([0 N*T0 -10 10]);
+xlabel('tiempo');ylabel('p(t)');
+title('pulso de radar transmitido');
+una vez obtenida la respuesta del pulso, se cargan ambos datos:
+%una vez obtenida la respuesta, se analiza el retraso:
+load('RespuestaRadarAgustinAvila.mat');
+load('PulsoRadarAgustinAvila.mat');
+%x=[zeros(1,10000),p,zeros(1,resto+24700)]; %prueba un retraso de 0.1 ms
+ret=xcorr(x,p);                 % correlación entre x y p
+tx=0:T0:T0*(length(x)-1);       % base temporal para graficar la respuesta
+tret=-T0*(length(x)-1):T0:T0*(length(x)-1);
+%como p se rellena con ceros, la longitud total de la correlacion
+%va desde -tx(maximo adelanto) hasta tx(maximo atraso)
+[v,i]=max(ret);                 % valor y posicion del maximo de correlacion
+retardo=tret(i)*1000            %valor del retardo en ms
+d=((3e5)*(retardo/1000))/2      %c en km, retardo en seg.
+figure();
+plot(tx,x);grid;title('Respuesta del pulso');
+xlabel('tiempo(s)');ylabel('amplitud');
+figure();
+plot(tret,ret);grid;title('Correlacion entre la señal y su respuesta');
+xlabel('tiempo(s)');ylabel('amplitud');
 
 %% punto 2
 
@@ -76,7 +93,8 @@ function reconstruccion(x1,x2,t,S);
     xr1=cos(2*pi*fa1*t);
     xr2=cos(2*pi*fa2*t);
     xr=xr1+xr2;
-    
+    fd1*S
+    fd2*S
     %graficacion:
     figure();
     subplot(311);
