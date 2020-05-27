@@ -3,13 +3,13 @@
 #include <limits.h>
 #include <string.h>
 
-FILE *abrir_archivo(int i, char modo[])
+FILE *abrir_archivo(int i, char modo[],char extra[])
 {
     FILE *archivo;
     char string[100];
     char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));
-    snprintf(string, sizeof(string), "%s\\Signal_0%d.txt",cwd,i);
+    snprintf(string, sizeof(string), "%s\\Signal_0%d%s.txt",cwd,i,extra);
     archivo = fopen(string, modo);
     printf("%s\n",string);
     if (archivo == NULL)
@@ -38,12 +38,7 @@ float valor_medio(FILE *archivo)
 void resta_vmedio(FILE *archivo_original,int i, float vm){
     float valor;
     FILE *archivo_nuevo;
-    char string[120];
-    char cwd[PATH_MAX];
-    getcwd(cwd, sizeof(cwd));
-    snprintf(string, sizeof(string), "%s\\Signal_0%dvmedio.txt",cwd,i);
-    archivo_nuevo = fopen(string, "w+");
-    printf("%s\n",string);
+    archivo_nuevo=abrir_archivo(i,"w+","Vmedio");
     fscanf(archivo_original,"%f\n", &valor);
     fprintf(archivo_nuevo, "%.1f\n", valor);    //las frecuencias
     while (!feof(archivo_original))
@@ -59,12 +54,12 @@ void resta_vmedio(FILE *archivo_original,int i, float vm){
 
 
 int main() {
-    FILE archivo;
+    FILE *archivo;
     float medio;
     int i;
     //abre los archivos
     for(i=1;i<6;i++){
-        archivo=abrir_archivo(i,"r");
+        archivo=abrir_archivo(i,"r","");
         medio=valor_medio(archivo);
         printf("v%imedio= %f\n",i,medio);
         resta_vmedio(archivo,i,medio);
