@@ -3,23 +3,21 @@
 #include <limits.h>
 #include <string.h>
 
-FILE *abrir_archivo(char nombre[], char modo[])
+FILE *abrir_archivo(int i, char modo[])
 {
     FILE *archivo;
     char string[100];
     char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));
-    strcpy(string, cwd);
-    strcat(string,"\\");
-    strcat(string, nombre);
+    snprintf(string, sizeof(string), "%s\\Signal_0%d.txt",cwd,i);
     archivo = fopen(string, modo);
     printf("%s\n",string);
     if (archivo == NULL)
     {
         printf("NO SE PUEDE ABRIR EL ARCHIVO ESPECIFICADO\n");
     }
+    //fclose(archivo); //tengo que cerrarlo?
     return archivo;
-    fclose(archivo);
 }
 
 float valor_medio(FILE *archivo)
@@ -37,26 +35,41 @@ float valor_medio(FILE *archivo)
     return (suma/n);
 }
 
+void resta_vmedio(FILE *archivo_original,int i, float vm){
+    float valor;
+    FILE *archivo_nuevo;
+    char string[120];
+    char cwd[PATH_MAX];
+    getcwd(cwd, sizeof(cwd));
+    snprintf(string, sizeof(string), "%s\\Signal_0%dvmedio.txt",cwd,i);
+    archivo_nuevo = fopen(string, "w+");
+    printf("%s\n",string);
+    fscanf(archivo_original,"%f\n", &valor);
+    fprintf(archivo_nuevo, "%.1f\n", valor);    //las frecuencias
+    while (!feof(archivo_original))
+    {
+        fscanf(archivo_original, "%f\n", &valor);
+        fprintf(archivo_nuevo, "%.1f\n", valor-vm);
+    }
+    fclose(archivo_nuevo);
+    rewind(archivo_original);
+}
 
 
 
 
 int main() {
-    FILE *arch1, *arch2, *arch3, *arch4, *arch5;
-    float minimo, maximo, freq;
+    FILE archivo;
+    float medio;
+    int i;
     //abre los archivos
-    arch1 = abrir_archivo("Signal_01.txt", "r");
-    arch2 = abrir_archivo("Signal_02.txt", "r");
-    arch3 = abrir_archivo("Signal_03.txt", "r");
-    arch4 = abrir_archivo("Signal_04.txt", "r");
-    arch5 = abrir_archivo("Signal_05.txt", "r");
-    //prueba del valor medio
-    float medio=valor_medio(arch1);
-    
-    printf("vmedio= %f",medio);
-    //tengo que calcular valor medio de cada archivo y restarlo
-    //de cada archivo. guardarlo en un archivo nuevo.
-    //el primer valor tiene la frecuencia de muestreo.
+    for(i=1;i<6;i++){
+        archivo=abrir_archivo(i,"r");
+        medio=valor_medio(archivo);
+        printf("v%imedio= %f\n",i,medio);
+        resta_vmedio(archivo,i,medio);
+    }
+      //el primer valor tiene la frecuencia de muestreo.
     //de ahi para abajo son las medidas en volts
 
     //sumar y restar dos señales y guardar resultados
