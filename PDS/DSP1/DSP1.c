@@ -82,7 +82,6 @@ void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, in
     fscanf(arch1, "%f\n", &freq1);                     //leo frecuencia 1
     fscanf(arch2, "%f\n", &freq2);                     //leo frecuencia 2
     *freq_muestreo = (freq1 >= freq2) ? freq1 : freq2; //la frecuencia de muestreo es la mayor de las dos
-    printf("%f\n", *freq_muestreo);
     n1 = (float *)malloc((cant1) * sizeof(float)); // reservo memoria para estos arrays
     sig1 = (float *)malloc((cant1) * sizeof(float));
     n2 = (float *)malloc((cant2) * sizeof(float));
@@ -128,12 +127,10 @@ void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, in
             j = 0;
             for (i = 0; n1[i] < tmin; i++) //es medio un enrosque esto
             {
-                //printf("%d\n",i);
                 while ((n2[j] >= n1[i]) && (n2[j] <= n1[i + 1])) //todo: esto podria ser mas elegante
                 {
                     tmp1[j] = interpola_lineal(n1[i], n1[i + 1], sig1[i], sig1[i + 1], n2[j]);
                     tmp2[j] = sig2[j];
-                    //printf("%f\n", out_s1);
                     j++;
                 }
             }
@@ -143,12 +140,10 @@ void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, in
             j = 0;
             for (i = 0; n2[i] < tmin; i++) //genera el bucle mientras el valor temporal sea menor al tmin
             {
-                //printf("%d\n", i);
                 while ((n1[j] >= n2[i]) && (n1[j] < n2[i + 1])) //todo: esto podria ser mas elegante
                 {
                     tmp2[j] = interpola_lineal(n2[i], n2[i + 1], sig2[i], sig2[i + 1], n1[j]);
                     tmp1[j] = sig1[j];
-                    //printf("%f\n", out_s2);
                     j++;
                 }
             }
@@ -172,7 +167,6 @@ void Suma_Resta(FILE *archivo1, FILE *archivo2, char nombre[]) //realiza suma y 
     adapta_signals(archivo1, archivo2, &signal1, &signal2, &cant_muestras, &freq_muestreo); //se asegura que sean similares las señales
     fprintf(suma, "%.1f\n", freq_muestreo);
     fprintf(resta, "%.1f\n", freq_muestreo);
-    printf("cant muestras: %d\n", cant_muestras);
     for (i = 0; i < cant_muestras; i++)
     {
         //printf("%f\t%f\n",signal1[i],signal2[i]);
