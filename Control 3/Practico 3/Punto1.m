@@ -1,16 +1,19 @@
 clc;close all;
-% %% punto 1.1
-% n=1;d=[1 3 2];          %se cargan los valores de num y denom
-% G=tf(n,d)               %se arma la funcion de transferencia
-% t=stepinfo(G);          %se analiza la respuesta al escalon
-% t=t.SettlingTime;       %Se le asigna el t de establecimiento
-% T0=t/15                 %se busca un tiempo de muestreo     
-% T0=.1;
-% %% punto 1.2
-% p=pole(G)               %Se obtienen los polos de la planta
-% G2=c2d(G,T0,'impulse')
-% [nd,dd]=c2dm(n,d,T0,'zoh');
-% 
+%% punto 1.1
+n=1;d=[1 3 2];          %se cargan los valores de num y denom
+G=tf(n,d)               %se arma la funcion de transferencia
+t=stepinfo(G)          %se analiza la respuesta al escalon
+t=t.RiseTime;       %Se le asigna el t de establecimiento
+T0=t/15                 %se busca un tiempo de muestreo     
+T0=.1;
+%% punto 1.2
+p=pole(G)               %Se obtienen los polos de la planta
+[nd,dd]=c2dm(n,d,T0,'zoh')
+n=1;d=[1 3 2];          %se cargan los valores de num y denom
+G=tf(n,d) ;
+G2=c2d(G,T0,'impulse')
+
+
 % 
 % %% punto 1.3
 % ki=0;kd=0;
