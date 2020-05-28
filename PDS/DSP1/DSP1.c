@@ -9,18 +9,15 @@ FILE *abrir_archivo(int i, char modo[], char extra[])
     FILE *archivo;
     char string[100];
     char cwd[PATH_MAX];
-    getcwd(cwd, sizeof(cwd));//\\PDS\\DSP1
+    getcwd(cwd, sizeof(cwd)); //\\PDS\\DSP1
     snprintf(string, sizeof(string), "%s\\Signal_0%d%s.txt", cwd, i, extra);
     archivo = fopen(string, modo);
-    //printf("%s\n", string);
     if (archivo == NULL)
     {
         printf("NO SE PUEDE ABRIR EL ARCHIVO ESPECIFICADO\n");
     }
-    //fclose(archivo); //tengo que cerrarlo?
     return archivo;
 }
-
 int contar_lineas(FILE *archivo)
 {
     int n = 0;
@@ -69,7 +66,7 @@ float interpola_lineal(float x1, float x2, float y1, float y2, float x)
 }
 void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, int *cant_muestras, float *freq_muestreo)
 {
-    int cant1, cant2;        //variables para determinar longitudes
+    int cant1, cant2;                 //variables para determinar longitudes
     long i, j = 0;                    //contadores auxiliares
     float freq1, freq2, *sig1, *sig2; //ambas frecuencias y señales "auxiliares"
     float *n1, *n2, tmin, t1, t2;     //n es vector temporal, los t son tiempos finales
@@ -88,7 +85,6 @@ void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, in
     {
         n1[i] = i / freq1;               //genero el vector de tiempo
         fscanf(arch1, "%f\n", &sig1[i]); //guardo el valor en sig1
-        //printf("%d\t%f\t%f\n", i,sig1[i], n1[i]);
     }
     rewind(arch1); //vuelve el puntero a su posicion original
 
@@ -96,7 +92,6 @@ void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, in
     {
         n2[i] = i / freq2; //genero el vector de tiempo
         fscanf(arch2, "%f\n", &sig2[i]);
-        //printf("%d\t%f\t%f\n", i,sig2[i], n2[i]);
     }
     rewind(arch2);
 
@@ -105,10 +100,8 @@ void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, in
     tmin = (t1 <= t2) ? t1 : t2;                //el tiempo total sera el minimo de los dos
     *cant_muestras = (tmin) * (*freq_muestreo); //la cant de muestras es el menor tiempo / mayor frecuencia
     printf("frecuencia:%f\t cant_muestras:%d\t tmin:%f, %f, %f\n", *freq_muestreo, *cant_muestras, tmin, t1, t2);
-    float *tmp1 =(float *) malloc(*cant_muestras * sizeof(*tmp1)); //reserva memoria, no se si esta bien
-    float *tmp2 =(float *) malloc(*cant_muestras * sizeof(*tmp2)); //same
-    //out_s1 =(float *) malloc(*cant_muestras * sizeof(float)); //reserva memoria, no se si esta bien
-    //out_s2 =(float *) malloc(*cant_muestras * sizeof(float)); //same
+    float *tmp1 = (float *)malloc(*cant_muestras * sizeof(*tmp1)); //reserva memoria, no se si esta bien
+    float *tmp2 = (float *)malloc(*cant_muestras * sizeof(*tmp2)); //same
 
     //de aca en adelante, comienza a comparar las frecuencias para interpolar
     if (freq1 == freq2) //si son iguales, no hace falta interpolar
@@ -140,7 +133,7 @@ void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, in
         else //si f1 es mayor que f2
         {
             j = 0;
-            for (i = 0; n2[i] < tmin; i++)  //genera el bucle mientras el valor temporal sea menor al tmin
+            for (i = 0; n2[i] < tmin; i++) //genera el bucle mientras el valor temporal sea menor al tmin
             {
                 //printf("%d\n", i);
                 while ((n1[j] >= n2[i]) && (n1[j] < n2[i + 1]))
@@ -153,43 +146,28 @@ void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, in
             }
         }
     }
-    *out_s1=tmp1;
-    *out_s2=tmp2;
+    *out_s1 = tmp1;
+    *out_s2 = tmp2;
     free(n1);
     free(n2);
     free(sig1);
     free(sig2);
-    free(tmp1);
-    free(tmp2);
-    // for (i = 0; i < *cant_muestras/10; i++)
-    // {
-    //   printf("%f\t%f\n",out_s1[i],out_s2[i]);
-    // }
 }
-
-
-
-void Suma_Resta(FILE *archivo1, FILE *archivo2)
+void Suma_Resta(FILE *archivo1, FILE *archivo2, char nombre[])
 {
     int cant_muestras, i;
-    float freq_muestreo; 
+    float freq_muestreo;
     float *signal1, *signal2;
     FILE *suma, *resta;
-    //signal1 =(float *) malloc(contar_lineas(archivo1) * sizeof(float));
-    //signal2 =(float *) malloc(contar_lineas(archivo2) * sizeof(float));
-    suma = abrir_archivo(12, "w+", "Suma");
-    resta = abrir_archivo(12, "w+", "Resta");
+    suma = abrir_archivo(nombre, "w+", "Suma");
+    resta = abrir_archivo(nombre, "w+", "Resta");
     adapta_signals(archivo1, archivo2, &signal1, &signal2, &cant_muestras, &freq_muestreo);
-    for (i = 0; i < (cant_muestras/10); i++)
-    {
-      printf("%f\t%f\n",signal1[i],signal2[i]);
-    }
     fprintf(suma, "%.1f\n", freq_muestreo);
     fprintf(resta, "%.1f\n", freq_muestreo);
-    printf("cant muestras: %d\n",cant_muestras);
+    printf("cant muestras: %d\n", cant_muestras);
     for (i = 0; i < cant_muestras; i++)
     {
-      //  printf("%f\t%f\n",signal1[i],signal2[i]);
+        //printf("%f\t%f\n",signal1[i],signal2[i]);
         fprintf(suma, "%.1f\n", signal1[i] + signal2[i]);
         fprintf(resta, "%.1f\n", signal1[i] - signal2[i]);
     }
@@ -251,76 +229,29 @@ void max_min_freq(FILE *arch, int i)
     freq_analog = freq_analogica(arch, maximo, minimo);
     printf("MIN: %.1fV\tMAX: %.1fV\tFREQ ANALOG: %.1fHz\n", minimo, maximo, freq_analog);
 }
+void correlacion(FILE *arch1, FILE *arch2, char nombre[])
+{
+    int cant_muestras, i, k, n1, n2;
+    float *s1, *s2, freq_muestreo, freq1, freq2;
+    double correlacion;
+    FILE *arch_corr;
+    n1 = contar_lineas(arch1) - 1;
+    n2 = contar_lineas(arch2) - 1;    
+    arch_corr = abrir_archivo(nombre, "w+","correlacion");
+    adapta_signals(arch1, arch2, &s1, &s2, &cant_muestras, &freq_muestreo);
+    fprintf(arch_corr, "%.1f\n", freq_muestreo); // guardo la freq de muestreo
 
-// void correlacion(FILE *arch1, FILE *arch2, char nombre[])
-// {
-
-//     int cant_muestras, i, k, son_iguales = 0, n1, n2;
-//     float *s1, *s2, freq_muestreo, dato, freq1, freq2;
-//     double correlacion;
-//     FILE *arch_nuevo;
-
-//     n1 = contar_lineas(arch1) - 1;
-//     n2 = contar_lineas(arch2) - 1;
-//     s1 = (float *)malloc(n1 * sizeof(float));
-//     s2 = (float *)malloc(n2 * sizeof(float));
-//     fscanf(arch1, "%f\n", &freq1);
-//     fscanf(arch2, "%f\n", &freq2);
-//     // copio los archivos en arreglos
-//     for (i = 0; i < n1; i++)
-//         fscanf(arch1, "%f\n", &s1[i]);
-//     for (i = 0; i < n2; i++)
-//         fscanf(arch2, "%f\n", &s2[i]);
-//     // listo.
-//     rewind(arch1);
-//     rewind(arch2);
-
-//     arch_nuevo = abrir_archivo(12, "w", "correlacion");
-
-//     if (n1 == n2)
-//     {                    // si tienen el mismo largo, podrian ser iguales, analizemos..
-//         son_iguales = 1; // podrian ser iguales, veamos..
-//         for (i = 0; ((i < n1) && (son_iguales)); i++)
-//         {
-//             if (s1[i] != s2[i])
-//                 son_iguales = 0; // no son iguales
-//         }
-//     }
-
-//     if (son_iguales)
-//     {
-//         fprintf(arch_nuevo, "%.1f\n", freq1); // guardo la frecuencia de muestreo
-
-//         for (k = 0; k < n1; k++)
-//         { // con este for genero el retardo
-//             correlacion = 0;
-//             for (i = 0; i < n1 - k; i++)
-//                 correlacion += s1[i] * s2[i + k];
-
-//             fprintf(arch_nuevo, "%lf\n", correlacion); //guardo el coeficiente de autocorrelacion para el elemento [i]
-//         }
-//     }
-
-//     else
-//     {
-//         adapta_signals(arch1, arch2, s1, s2, &cant_muestras, &freq_muestreo);
-//         fprintf(arch_nuevo, "%.1f\n", freq_muestreo); // guardo la freq de muestreo
-//                                                       //********* calculo el valor medio para las nueva sse�ales interpoladas
-
-//         for (k = 0; k < cant_muestras; k++)
-//         { // con este for genero el retardo
-//             correlacion = 0;
-//             for (i = 0; i < cant_muestras - k; i++)
-//                 correlacion += s1[i] * s2[i + k];
-
-//             fprintf(arch_nuevo, "%lf\n", correlacion); //guardo el coeficiente de autocorrelacion para el elemento [i]
-//         }
-//     }
-
-//     fclose(arch_nuevo);
-//     free(s1);
-//     free(s2);
-// } // fin convolucion
+    for (k = 0; k < cant_muestras; k++)
+    {
+        correlacion = 0;
+        for (i = 0; i < cant_muestras - k; i++)
+            correlacion += s1[i] * s2[i + k];
+        fprintf(arch_corr, "%lf\n", correlacion); //guardo el coeficiente de autocorrelacion para el elemento [i]
+    }
+    free(s1);
+    free(s2);
+    fclose(arch_corr);
+}
 
 int main()
 {
@@ -341,10 +272,9 @@ int main()
 
     arch = abrir_archivo(1, "r", "");
     arch2 = abrir_archivo(2, "r", "");
-    Suma_Resta(arch, arch2);
-    //correlacion(arch2,arch2,"2");
-    //sumar y restar dos señales y guardar resultados
-
-    //realizar autocorrelacion y correlacion entre 2
-    //graficar en matlab xd
+    Suma_Resta(arch, arch2,12);
+    correlacion(arch2, arch2, 2);
+    correlacion(arch, arch2, 12);
+    fclose(arch);
+    fclose(arch2);
 }
