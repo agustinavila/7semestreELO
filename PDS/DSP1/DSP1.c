@@ -10,7 +10,7 @@ FILE *abrir_archivo(int i, char modo[], char extra[]) //abre los archivos en el 
     char string[100];
     char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));                                                //obtiene el directorio donde se esta ejecutando
-    snprintf(string, sizeof(string), "%s\\Signal_0%d%s.txt", cwd, i, extra); //siguen el patron original, solo les cambia el numero
+    snprintf(string, sizeof(string), "%s\\PDS\\DSP1\\Signal_0%d%s.txt", cwd, i, extra); //siguen el patron original, solo les cambia el numero
     archivo = fopen(string, modo);
     if (archivo == NULL)
     {
@@ -80,9 +80,7 @@ void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, in
     cant1 = contar_lineas(arch1) - 1; //cuenta la cantidad de valores que tiene menos el de frecuencia
     cant2 = contar_lineas(arch2) - 1;
     fscanf(arch1, "%f\n", &freq1);                     //leo frecuencia 1
-    fscanf(arch2, "%f\n", &freq2);                     //leo frecuencia 2
-    *freq_muestreo = (freq1 >= freq2) ? freq1 : freq2; //la frecuencia de muestreo es la mayor de las dos
-    n1 = (float *)malloc((cant1) * sizeof(float)); // reservo memoria para estos arrays
+        n1 = (float *)malloc((cant1) * sizeof(float)); // reservo memoria para estos arrays
     sig1 = (float *)malloc((cant1) * sizeof(float));
     n2 = (float *)malloc((cant2) * sizeof(float));
     sig2 = (float *)malloc((cant2) * sizeof(float));
@@ -93,7 +91,9 @@ void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, in
         fscanf(arch1, "%f\n", &sig1[i]); //guardo el valor en sig1
     }
     rewind(arch1); //vuelve el puntero a su posicion original
-
+    
+    fscanf(arch2, "%f\n", &freq2);                     //leo frecuencia 2
+    *freq_muestreo = (freq1 >= freq2) ? freq1 : freq2; //la frecuencia de muestreo es la mayor de las dos
     for (i = 0; i < cant2; i++) //idem al anterior
     {
         n2[i] = i / freq2; //genero el vector de tiempo
@@ -190,7 +190,7 @@ float freq_analogica(FILE *arch, float mayor, float menor) //obtiene la frecuenc
         if (valor == mayor) //esta resolucion tampoco es muy elegante
         {
             bandera = 1; //indico que encontre el 1er maximo
-            n++;
+           // n++;
             while ((!feof(arch)) && bandera)
             {
                 fscanf(arch, "%f\n", &valor);
@@ -209,7 +209,7 @@ float freq_analogica(FILE *arch, float mayor, float menor) //obtiene la frecuenc
         } //termina el ciclo de cuenta
     }
     rewind(arch);
-    return (Fs / (n - 1));
+    return (Fs / (n));
 }
 void max_min_freq(FILE *arch, int i) //obtiene valores maximos, minimos y frecuencia
 {
@@ -231,25 +231,25 @@ void max_min_freq(FILE *arch, int i) //obtiene valores maximos, minimos y frecue
 }
 void correlacion(FILE *arch1, FILE *arch2, char nombre[]) //realiza correlacion entre dos archivos
 {
-    int cant_muestras, i, k;
+    int cant_muestras, n, k;
     float *s1, *s2, freq_muestreo;
     double correlacion;
     FILE *arch_corr;
     arch_corr = abrir_archivo(nombre, "w+", "correlacion");
     adapta_signals(arch1, arch2, &s1, &s2, &cant_muestras, &freq_muestreo); //se asegura que sean similares
     fprintf(arch_corr, "%.1f\n", freq_muestreo);                            // freq de muestreo
-    for (k = 0; k < cant_muestras; k++)                                     //realiza la correlacion propiamente dicha
+   
+    for (n=-cant_muestras; n < cant_muestras; n++)                                     //realiza la correlacion propiamente dicha
     {
         correlacion = 0;
-        for (i = 0; i < cant_muestras - k; i++)
-            correlacion += s1[i] * s2[i + k];
+        for (k = 0; k < cant_muestras + n; k++)
+            correlacion += s1[k%cant_muestras] * s2[(cant_muestras-n+k)%cant_muestras];
         fprintf(arch_corr, "%lf\n", correlacion); //guardo el coeficiente de autocorrelacion para el elemento [i]
     }
     free(s1); //libera memoria
     free(s2);
     fclose(arch_corr);
 }
-
 int main()
 {
     FILE *arch, *arch2;
@@ -267,11 +267,15 @@ int main()
         fclose(arch);
     }
 
+    
     arch = abrir_archivo(1, "r", "");  //abre dos señales para realizar
     arch2 = abrir_archivo(2, "r", ""); //suma, resta y correlacion
     Suma_Resta(arch, arch2, 12);
-    correlacion(arch2, arch2, 2);
+
     correlacion(arch, arch2, 12);
+    fclose(arch);
+    arch = abrir_archivo(2, "r", ""); 
+    correlacion(arch2, arch2, 2);
     fclose(arch);
     fclose(arch2);
 }
