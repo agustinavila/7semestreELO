@@ -239,11 +239,19 @@ void correlacion(FILE *arch1, FILE *arch2, char nombre[]) //realiza correlacion 
     adapta_signals(arch1, arch2, &s1, &s2, &cant_muestras, &freq_muestreo); //se asegura que sean similares
     fprintf(arch_corr, "%.1f\n", freq_muestreo);                            // freq de muestreo
    
-    for (n=-cant_muestras; n < cant_muestras; n++)                                     //realiza la correlacion propiamente dicha
+    for (n=-cant_muestras; n < 0; n++)                                     //realiza la correlacion propiamente dicha
     {
         correlacion = 0;
         for (k = 0; k < cant_muestras + n; k++)
             correlacion += s1[k%cant_muestras] * s2[(cant_muestras-n+k)%cant_muestras];
+        fprintf(arch_corr, "%lf\n", correlacion); //guardo el coeficiente de autocorrelacion para el elemento [i]
+    }
+        
+        for (n=0; n < cant_muestras; n++)                                     //realiza la correlacion propiamente dicha
+    {
+        correlacion = 0;
+        for (k = 0; k < cant_muestras-n; k++)
+            correlacion += s1[n+k] * s2[k];
         fprintf(arch_corr, "%lf\n", correlacion); //guardo el coeficiente de autocorrelacion para el elemento [i]
     }
     free(s1); //libera memoria
