@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
+//#include <stdin.h>
 
 FILE *abrir_archivo(int i, char modo[], char extra[]) //abre los archivos en el modo indicado, se le puede agregar un sufijo al nombre
 {
@@ -10,7 +11,7 @@ FILE *abrir_archivo(int i, char modo[], char extra[]) //abre los archivos en el 
     char string[100];
     char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));                                                //obtiene el directorio donde se esta ejecutando
-    snprintf(string, sizeof(string), "%s\\PDS\\DSP1\\Signal_0%d%s.txt", cwd, i, extra); //siguen el patron original, solo les cambia el numero
+    snprintf(string, sizeof(string), "%s\\Signal_0%d%s.txt", cwd, i, extra); //siguen el patron original, solo les cambia el numero
     archivo = fopen(string, modo);
     if (archivo == NULL)
     {
@@ -156,7 +157,7 @@ void adapta_signals(FILE *arch1, FILE *arch2, float **out_s1, float **out_s2, in
     free(sig1);
     free(sig2); //se libera la memoria de las demas variables
 }
-void Suma_Resta(FILE *archivo1, FILE *archivo2, char nombre[]) //realiza suma y resta de dos funciones
+void Suma_Resta(FILE *archivo1, FILE *archivo2, int nombre) //realiza suma y resta de dos funciones
 {
     int cant_muestras, i;
     float freq_muestreo;
@@ -229,7 +230,7 @@ void max_min_freq(FILE *arch, int i) //obtiene valores maximos, minimos y frecue
     freq_analog = freq_analogica(arch, maximo, minimo); //obtiene la freq analogica
     printf("MIN: %.1fV\tMAX: %.1fV\tFREQ ANALOG: %.1fHz\n", minimo, maximo, freq_analog);
 }
-void correlacion(FILE *arch1, FILE *arch2, char nombre[]) //realiza correlacion entre dos archivos
+void correlacion(FILE *arch1, FILE *arch2, int nombre) //realiza correlacion entre dos archivos
 {
     int cant_muestras, n, k;
     float *s1, *s2, freq_muestreo;
@@ -239,7 +240,7 @@ void correlacion(FILE *arch1, FILE *arch2, char nombre[]) //realiza correlacion 
     adapta_signals(arch1, arch2, &s1, &s2, &cant_muestras, &freq_muestreo); //se asegura que sean similares
     fprintf(arch_corr, "%.1f\n", freq_muestreo);                            // freq de muestreo
    
-    for (n=-cant_muestras; n < 0; n++)                                     //realiza la correlacion propiamente dicha
+    for (n=-cant_muestras; n < 0; n++)                                     //realiza la correlacion para n negativos
     {
         correlacion = 0;
         for (k = 0; k < cant_muestras + n; k++)
@@ -247,7 +248,7 @@ void correlacion(FILE *arch1, FILE *arch2, char nombre[]) //realiza correlacion 
         fprintf(arch_corr, "%lf\n", correlacion); //guardo el coeficiente de autocorrelacion para el elemento [i]
     }
         
-        for (n=0; n < cant_muestras; n++)                                     //realiza la correlacion propiamente dicha
+        for (n=0; n < cant_muestras; n++)                                     //realiza la correlacion para n > 0
     {
         correlacion = 0;
         for (k = 0; k < cant_muestras-n; k++)
@@ -262,7 +263,7 @@ int main()
 {
     FILE *arch, *arch2;
     float medio;
-    int i;
+    int i,j;
     //abre los archivos
     for (i = 1; i < 6; i++) //realiza las acciones comunes para los 5 archivos
     {
@@ -274,16 +275,20 @@ int main()
         max_min_freq(arch, i);
         fclose(arch);
     }
+   printf("ingrese señal 1:\n");
+   fflush(stdin);
+   scanf("%d",&i);
+printf("ingrese señal 2: (es la que se autocorrelacionara)\n");
+   fflush(stdin);
+scanf("%d",&j);
+    arch = abrir_archivo(i, "r", "");  //abre dos señales para realizar
+    arch2 = abrir_archivo(j, "r", ""); //suma, resta y correlacion
+    Suma_Resta(arch, arch2, (i*10)+j);
 
-    
-    arch = abrir_archivo(1, "r", "");  //abre dos señales para realizar
-    arch2 = abrir_archivo(2, "r", ""); //suma, resta y correlacion
-    Suma_Resta(arch, arch2, 12);
-
-    correlacion(arch, arch2, 12);
-    fclose(arch);
-    arch = abrir_archivo(2, "r", ""); 
-    correlacion(arch2, arch2, 2);
+    correlacion(arch, arch2, (i*10)+j);
+    correlacion(arch2, arch2, j);
     fclose(arch);
     fclose(arch2);
+    printf("\nPresione una tecla para terminar");
+    getch();
 }
