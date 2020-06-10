@@ -30,6 +30,7 @@ disp("La cupla de arranque en un arranque estrella es "+Tarr_est+"Nm");
 
 %% deslizamiento nominal y numero de polos
 disp("Punto 1 F:")
+f=50;
 p=floor(120*f/n);   %numero de polos
 ns=120*f/p;         %velocidad sincronica
 s=(ns-n)/ns;        %deslizamiento
@@ -38,7 +39,7 @@ disp("Punto 1 G:")
 disp("El numero de polos es "+p);
 
 
-
+clear;
 
 %% punto 2
 Pn=11185.5; %en W
@@ -58,21 +59,19 @@ disp("El rendimiento es de "+rendimiento*100+"%");
 disp("Punto 2 C:");
 f=50;
 ns=(120*f)/p;
-disp("La velocidad nominal es de "+ns+"RPM");
+n=ns*(1-sn);
+disp("La velocidad nominal es de "+n+"RPM");
 
 %% Punto D
-
+W=n*2*pi/60;
+Tn=Pn/W;
+Tarr=1.2*Tn;
 Tcarga=70;
-transf1=.5;
-transf2=.65;
-transf3=.8;
-%averiguar cupla de arranque
+transf1=.5; Tarr1=Tarr*(transf1)^2;
+transf2=.65;Tarr2=Tarr*(transf2)^2;
+transf3=.8; Tarr3=Tarr*(transf3)^2;
 
-%% cupla de arranque para estrella triangulo
-
-Tarr_est=Tarr/3;
-
-%% deslizamiento nominal y numero de polos
-p=floor(120*f/n);   %numero de polos
-ns=120*f/p;         %velocidad sincronica
-s=(ns-n)/ns;        %deslizamiento
+disp("Cupla de arranque para distintos valores de autotransformador");
+disp("Con relacion del "+transf1*100+"% Tarr vale "+Tarr1);
+disp("Con relacion del "+transf2*100+"% Tarr vale "+Tarr2);
+disp("Con relacion del "+transf3*100+"% Tarr vale "+Tarr3);
