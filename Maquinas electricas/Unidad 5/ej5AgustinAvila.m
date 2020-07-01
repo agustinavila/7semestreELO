@@ -12,7 +12,7 @@ disp("la corriente nominal es "+In+"A");
 
 %% cupla nominal y cupla de arranque
 disp("Punto 1 B:")
-Tn=Pn/(2*pi*n);
+Tn=Pn/((2*pi/60)*n);
 Tarr=.8*Tn;
 disp("La cupla nominal es "+Tn+"Nm");
 disp("La cupla de arranque es "+Tarr+"Nm");
