@@ -20,3 +20,42 @@ plot(AccionControl);
 legend('r(t)','q_0(t)');ylim([0 10]);
 title('q0(t) ante una entrada escalon unitaria');
 xlabel('tiempo (s)'),ylabel('caudal');
+
+
+%%punto2
+
+R=8;L=.08;Te=L/R;Kem=0.67;
+J=2.22*10^-3;f=1.86*10^-3;Tm=J/f;
+Tcarga=0.1;
+sim('punto2.slx');
+figure();
+plot(Entrada);
+hold on; grid on;
+plot(VelocidadRPM);
+title('Relacion entre tension de armadura y velocidad en RPM');
+legend('Velocidad','Va');
+xlabel('tiempo(s)');
+Para obtener el modelo discreto del motor en vacio:
+G1=tf(1/R,[Te 1]);
+G2=tf(1/f,[Tm 1]);
+wc=feedback(G1*G2*Kem,Kem);
+T0=0.02;
+[nc,dc]=tfdata(wc,'v');
+[nd,dd]=c2dm(nc,dc,T0,'zoh')
+q0=1/sum(nd)
+q1=dd(2)*q0
+q2=dd(3)*q0
+p1=nd(2)*q0
+p2=nd(3)*q0
+sim('punto2.slx');
+figure();
+plot(AccionControl);
+title("Accion de control aplicada con una carga de 2Nm a los 0.1s");
+grid on;
+figure();
+plot(Entrada);
+grid on;hold on;
+plot(VelocidadRPM);
+title('Respuesta del motor con carga de 2Nm a los 0.1s');
+legend('referencia velocidad','Velocidad del motor')
+xlabel('tiempo(s)'),ylabel('velocidad (RPM)');
