@@ -1,4 +1,4 @@
-%%%punto 1
+%% punto 1
 nc=1;                           %numerador continuo
 dc=[.4 4.2 3];                  %Denominador cont.
 T0=.5;                          %Tiempo de muestreo
@@ -35,7 +35,7 @@ plot(VelocidadRPM);
 title('Relacion entre tension de armadura y velocidad en RPM');
 legend('Velocidad','Va');
 xlabel('tiempo(s)');
-Para obtener el modelo discreto del motor en vacio:
+%Para obtener el modelo discreto del motor en vacio:
 G1=tf(1/R,[Te 1]);
 G2=tf(1/f,[Tm 1]);
 wc=feedback(G1*G2*Kem,Kem);
@@ -59,3 +59,23 @@ plot(VelocidadRPM);
 title('Respuesta del motor con carga de 2Nm a los 0.1s');
 legend('referencia velocidad','Velocidad del motor')
 xlabel('tiempo(s)'),ylabel('velocidad (RPM)');
+
+
+%% punto 3
+nc=1;                           %numerador continuo
+dc=[.0000001 .0001 1];          %Denominador cont.
+T0=.0002;                       %Tiempo de muestreo
+[nd,dd]=c2dm(nc,dc,T0,'zoh')    %nd y dd son los valores discretos 
+q0=1/sum(nd)
+q1=dd(2)*q0
+q2=dd(3)*q0
+p1=nd(2)*q0
+p2=nd(3)*q0
+sim('Punto3.slx');
+figure();
+plot(Entrada);
+hold on; grid on;
+plot(Salida);
+title("Entrada y salida del sistema controlado");
+legend('referencia','Salida');
+xlabel('tiempo'),ylabel('Tension');
