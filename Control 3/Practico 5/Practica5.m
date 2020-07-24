@@ -2,11 +2,16 @@
 nc=1;                           %numerador continuo
 dc=[.4 4.2 3];                  %Denominador cont.
 T0=.5;                          %Tiempo de muestreo
-[nd,dd]=c2dm(nc,dc,T0,'zoh')    %nd y dd son los valores discretos  
-ndc=[9.4518 -6.5019 0.0491];    %Denominador del controlador
-ddc=[1 -0.8251 -0.1748];        %Numerador del controlador
+[nd,dd]=c2dm(nc,dc,T0,'zoh')    %nd y dd son los valores discretos
+q0=1/sum(nd)
+q1=dd(2)*q0
+q2=dd(3)*q0
+p1=nd(2)*q0
+p2=nd(3)*q0
+ndc=[q0 q1 q2];                 %Denominador del controlador
+ddc=[1 -p1 -p2];                %Numerador del controlador
 sim('Punto1.slx');              %Simula el modelo armado
-%% graficacion
+% graficacion
 figure();
 plot(Entrada);
 hold on; grid minor;
@@ -79,3 +84,27 @@ plot(Salida);
 title("Entrada y salida del sistema controlado");
 legend('referencia','Salida');
 xlabel('tiempo'),ylabel('Tension');
+
+%% punto 4
+nc=1;                           %numerador continuo
+dc=[.4 4.2 3];                  %Denominador cont.
+T0=.5;                          %Tiempo de muestreo
+[nd,dd]=c2dm(nc,dc,T0,'zoh')    %nd y dd son los valores discretos
+ndc=[dd];                 %Denominador del controlador
+ddc=[nd 0 0]-[0 0 nd];                %Numerador del controlador
+ddc=ddc(2:end)
+sim('Punto1.slx');              %Simula el modelo armado
+% graficacion
+figure();
+plot(Entrada);
+hold on; grid;
+plot(Salida);
+legend('r(t)','H2(t)');
+title('H2(t) ante una entrada escalon unitaria');
+xlabel('tiempo (s)'),ylabel('altura (m)');
+figure();
+plot(Entrada);hold on; grid on;
+plot(AccionControl);
+legend('r(t)','q_0(t)');
+title('q0(t) ante una entrada escalon unitaria');
+xlabel('tiempo (s)'),ylabel('caudal');
