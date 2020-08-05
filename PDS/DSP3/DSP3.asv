@@ -1,0 +1,47 @@
+clc;clear all;
+%% Punto 2
+% figure("Name","Tono 20Hz");    %genera la figura
+% subplot(211);                   % en la figura superior grafica la original
+% graficacionfunciones(20,256); %funcion que grafica
+% subplot(212);                   %repite el proceso para la funcion sin Vmedio
+% graficacionfunciones(20,16);
+% 
+% figure("Name","Tono 50Hz");    %genera la figura
+% subplot(211);                   % en la figura superior grafica la original
+% graficacionfunciones(50,256); %funcion que grafica
+% subplot(212);                   %repite el proceso para la funcion sin Vmedio
+% graficacionfunciones(50,16);
+% 
+% figure("Name","Tono 200Hz"+i);    %genera la figura
+% subplot(211);                   % en la figura superior grafica la original
+% graficacionfunciones(200,256); %funcion que grafica
+% subplot(212);                   %repite el proceso para la funcion sin Vmedio
+% graficacionfunciones(200,16);
+
+%% Punto 3
+%Abrir archivo wav
+[x,Fs] = audioread('Perro.wav');
+arch = fopen('Tono_11025HzPerro.txt', 'wt');
+for i=1:length(x)
+
+fprintf(arch, '%.5f\n', x(i));
+end
+fclose(arch);
+
+
+
+
+
+
+%% funciones utilizadas
+function graficacionfunciones(freq,muestras) %%abre el archivo y lo grafica
+arch=load("Tono_"+freq+"Hz_Transformada"+muestras+".txt"); 
+%abre el archivo "i" y mod es para agregar si esta correlacionado,
+%es la se�al sumada, restada o sin valor medio.
+Fs=arch(1);                     %guarda Fs
+%n=0:1/Fs:(length(arch)-2)/Fs;   %Genera base temporal en base a Fs y la longitud
+%dtplot(n,arch(2:length(arch))); %Grafica la funcion
+plot(arch(2:length(arch)));
+title("Tono de "+freq+" Hz con "+muestras+" puntos");   %Agrega titulo
+grid;xlim([1 muestras]);
+end
