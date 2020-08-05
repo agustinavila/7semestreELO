@@ -10,7 +10,7 @@ FILE *abrir_archivo(char modo[], char extra[]) //abre los archivos en el modo in
     FILE *archivo;
     char string[100];
     char cwd[PATH_MAX];
-    getcwd(cwd, sizeof(cwd));                                                //obtiene el directorio donde se esta ejecutando
+    getcwd(cwd, sizeof(cwd));                                               //obtiene el directorio donde se esta ejecutando
     snprintf(string, sizeof(string), "%s\\OndaCuadrada%s.txt", cwd, extra); //siguen el patron original, solo les cambia el numero
     archivo = fopen(string, modo);
     if (archivo == NULL)
@@ -45,52 +45,50 @@ float valor_medio(FILE *arch) //devuelve el promedio del archivo
     rewind(arch);
     return (suma / n); //devuelve el promedio
 }
-void promedio(FILE *archivo_original) //resta el promedio a todo el archivo
+void promedio(FILE *archivo_original) //Realiza el promedio
 {
-    float actual=0,previo=0,salida=0;
+    float actual = 0, previo = 0, salida = 0, freq;
     FILE *archivo_nuevo;
     archivo_nuevo = abrir_archivo("w+", "Promedio"); //abre un nuevo archivo
-    fscanf(archivo_original, "%f\n", &previo);         //obtiene la frecuencia
-	fprintf(archivo_nuevo, "%.1f\n", previo);          //y la guarda en el nuevo
-	fscanf(archivo_original, "%f\n", &previo);		//lee el primer valor para obtener el promedio
-    fprintf(archivo_nuevo, "%.2f\n", previo);          //y la guarda en el nuevo
+    fscanf(archivo_original, "%f\n", &freq);         //obtiene la frecuencia
+    fprintf(archivo_nuevo, "%.1f\n", freq);          //y la guarda en el nuevo
 
     while (!feof(archivo_original))
     {
-        fscanf(archivo_original, "%f\n", &actual);     //a cada valor le resta el Vmedio
-		salida=(actual+previo)/2;
-		previo=actual;
-        fprintf(archivo_nuevo, "%.2f\n", salida); //y lo guarda en el nuevo archivo
+        fscanf(archivo_original, "%f\n", &actual); //Lee el valor actual
+        salida = (actual + previo) / 2;            //Realiza el promedio
+        previo = actual;                           //Desplaza el valor actual
+        fprintf(archivo_nuevo, "%.2f\n", salida);  //y lo guarda en el nuevo archivo
     }
-    fclose(archivo_nuevo); //cierra el archivo original
+    fclose(archivo_nuevo); //cierra el archivo nuevo
     rewind(archivo_original);
 }
 void funcion4(FILE *archivo_original) //resta el promedio a todo el archivo
 {
-    float actual=0,previo=0,salida=0,previo2=0,freq;
+    float actual = 0, previo = 0, salida = 0, previo2 = 0, freq;
     FILE *archivo_nuevo;
     archivo_nuevo = abrir_archivo("w+", "Punto4"); //abre un nuevo archivo
-    fscanf(archivo_original, "%f\n", &freq);         //obtiene la frecuencia
-	fprintf(archivo_nuevo, "%.1f\n", freq);          //y la guarda en el nuevo
+    fscanf(archivo_original, "%f\n", &freq);       //obtiene la frecuencia
+    fprintf(archivo_nuevo, "%.1f\n", freq);        //y la guarda en el nuevo
 
     while (!feof(archivo_original))
     {
-        fscanf(archivo_original, "%f\n", &actual);     //a cada valor le resta el Vmedio
-		salida=actual+(0.4*previo)-(0.6*previo2);
-		previo2=previo;
-		previo=actual;
+        fscanf(archivo_original, "%f\n", &actual); //lee el valor actual
+        salida = actual + (0.4 * previo) - (0.6 * previo2);
+        previo2 = previo;                           //desplaza los valores
+        previo = actual;
         fprintf(archivo_nuevo, "%.2f\n", salida); //y lo guarda en el nuevo archivo
     }
-    fclose(archivo_nuevo); //cierra el archivo original
+    fclose(archivo_nuevo); //cierra el archivo nuevo
     rewind(archivo_original);
 }
 int main()
 {
-	int N;
+    int N;
     FILE *arch;
-    arch = abrir_archivo("r","");  //abre archivo
-	promedio(arch);
-	funcion4(arch);
+    arch = abrir_archivo("r", ""); //abre archivo
+    promedio(arch);
+    funcion4(arch);
     fclose(arch);
     printf("\nPresione una tecla para terminar");
     getch();
