@@ -24,3 +24,5 @@ Telecomunicaciones I/Practica de laboratorio AM y DSB/design.out
 Telecomunicaciones I/Practica de laboratorio AM y DSB/design.net
 .vscode/c_cpp_properties.json
 .vscode/launch.json
+.vscode/arduino.json
+.vscode/tasks.json
