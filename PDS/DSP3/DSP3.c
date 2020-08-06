@@ -5,6 +5,7 @@
 //TODO: comprobar que el offset y la cantidad de puntos
 //TODO: no exceda el largo total del archivo
 
+
 #include <unistd.h>
 #include <stdio.h>
 #include <limits.h>
