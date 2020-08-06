@@ -1,3 +1,10 @@
+//Juan Agustin Avila
+// Julio 2020
+//Reg 26076 - ELO
+
+//TODO: comprobar que el offset y la cantidad de puntos
+//TODO: no exceda el largo total del archivo
+
 #include <unistd.h>
 #include <stdio.h>
 #include <limits.h>
@@ -66,28 +73,28 @@ void transformada(FILE *archivo_original, int offset, int N, char nombre[])
 int main(int argc, char *argv[])
 {
 
-    int N,offset;
+    int N, offset;
     FILE *arch;
     if (argc == 4)
     {
-        N=atoi(argv[2]);
-        offset=atoi(argv[3]);
+        N = atoi(argv[2]);
+        offset = atoi(argv[3]);
         printf("Se calculara la TDF del archivo %s con %d muestras y un offset de %d\n", argv[1], N, offset);
     }
     else if (argc > 4)
     {
         printf("Demasiados argumentos.\n");
-        return(1);
+        return (1);
     }
     else
     {
-        printf("No se pasaron argumentos\n");
+        printf("No se pasaron suficientes argumentos.\n\n");
         printf("El programa se debe correr de la siguiente manera:\n");
         printf("DSP3.exe archivo_a_analizar cant_muestras offset\n");
         printf("Por ejemplo para el archivo \"Tono_50Hz.txt\" con 16 muestras y un offset de 200:\n");
         printf("\"DSP3.exe Tono_50Hz 16 200\"\n");
         printf("(No se debe incluir la terminacion .txt del archivo)\n");
-        return(1);
+        return (1);
     }
     arch = abrir_archivo("r", argv[1], ""); //abre archivo
     transformada(arch, offset, N, argv[1]);

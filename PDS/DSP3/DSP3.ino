@@ -1,51 +1,51 @@
 #include <math.h>
-// Codigo para Arduino UNO – Simulador Tinkercad
-int Ts = 1; //Tiempo de Muestreo en milisegundos
-int N = 16;
-int cont = 0;
-float datos[N];
-#define pi 3.14159265
+//Juan Agustin Avila
+// Julio 2020
+//Reg 26076 - ELO
+const int Ts = 1; //Tiempo de Muestreo en milisegundos
+const int N = 8;  //cantidad de puntos
+const float pi = 3.1416;
 
-void transformada(int N, float valores[]);
 void setup()
 {
+	delay(10); //solo por si el generador tiene un transitorio
 	Serial.begin(57600);
-	delay(10);
 }
+
 void loop()
 {
+	static int cont = 0;
+	static float datos[N];
 	if (cont < N)
 	{
-		datos(cont) = (float)analogRead(A0) * 5.0 / 1023.0;
+		datos[cont] = (float)(analogRead(A0) - 512) * 2 / 1023.0; //genera una señal similar a la provista por la catedra
 		cont++;
 	}
 	else
 	{
-		transformada(N, valores)
+		transformada(N, datos);	//cuando obtiene la cantidad de datos, calcula la transf.
 		cont = 0;
 	}
-
-	Serial.println(cont);
-
-
 	delay(Ts); // Espera Ts
 }
 
-void transformada(int N, float valores[])
+void transformada(int N, float *x)
 {
-    float x[N], salida = 0;
-    int k = 0, n = 0;
-    float Im = 0, Re = 0;
-    for (k = 0; k < N; k++)
-    {
-        for (n = 0; n < N; n++)
-        {
-            Im = (Im + x[n] * (sin((2 * pi * n * k) / N))); //realiza el calculo
-            Re = (Re + x[n] * (cos((2 * pi * n * k) / N)));
-        }
-        salida = sqrt(pow(Re, 2) + pow(Im, 2));
-       	Serial.print("%.3f\n", salida); //guarda el resultado en el archivo
-        Im = 0;
-        Re = 0;
-    }
+	float salida = 0;
+	float val = 0;
+	int k = 0, n = 0;
+	float Im = 0, Re = 0;
+	for (k = 0; k < N; k++)
+	{
+		for (n = 0; n < N; n++)
+		{
+			val = (2 * pi * n * k) / N;
+			Im = Im + (x[n] * sin(val));
+			Re = Re + (x[n] * cos(val));
+		}
+		salida = sqrt(pow(Re, 2) + pow(Im, 2));
+		Serial.println(salida);
+		Im = 0;
+		Re = 0;
+	}
 }
