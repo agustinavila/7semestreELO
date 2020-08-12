@@ -1,16 +1,14 @@
 //Juan Agustin Avila
-// Julio 2020
-//Reg 26076 - ELO
+//julio 2020
+//Reg 26076 - ELO - FI UNSJ
 
-//TODO: revisar como pasarle argumentos
-//TODO: resolver las funciones del filtro
+//TODO: revisar como pasarle argumentos con getopt
 
 #include <unistd.h>
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
-//#include <stdin.h>
 
 FILE *abrir_archivo(char modo[], char nombre[], char extra[]) //abre los archivos en el modo indicado, se le puede agregar un sufijo al nombre
 {
@@ -26,6 +24,7 @@ FILE *abrir_archivo(char modo[], char nombre[], char extra[]) //abre los archivo
 	}
 	return archivo;
 }
+
 int contar_lineas(FILE *archivo)
 {
 	int n = 0;
@@ -38,6 +37,7 @@ int contar_lineas(FILE *archivo)
 	rewind(archivo);
 	return n;
 }
+
 float *carga_filtro(FILE *archfiltro, int N, int offset)
 {
 	int i = 0;
@@ -47,20 +47,16 @@ float *carga_filtro(FILE *archfiltro, int N, int offset)
 		fscanf(archfiltro, "%f\n", &filtro[0]);
 	}
 
-	for (i = 0; i < (N-offset); i++)
+	for (i = 0; i < (N - offset); i++)
 	{
 		fscanf(archfiltro, "%f\n", &filtro[i]);
-		printf("%f\n",filtro[i]);
+		printf("%f\n", filtro[i]);
 	}
 	rewind(archfiltro);
 	return filtro;
 }
 
-void filtrado(FILE *archivo_original, float num[],float den[], int N, char nombre[], char extra[])
-// Los argumentos son: *archivo_original es el archivo a analizar
-// offset es un offset a partir del cual se toman los datos
-// N es la cantidad de puntos con los cuales realiza la transformada
-// nombre es el nombre del archivo original
+void filtrado(FILE *archivo_original, float num[], float den[], int N, char nombre[], char extra[])
 {
 	float entrada[N], freq, out = 0, salida[N];
 	int k = 0;
@@ -71,39 +67,39 @@ void filtrado(FILE *archivo_original, float num[],float den[], int N, char nombr
 	for (k = 0; k < N; k++)								//inicializa el arreglo
 	{
 		entrada[k] = 0; //coloca todos los valores en cero
+		salida[k] = 0;
 	}
+
 	while (!feof(archivo_original)) //lee una nueva linea
 	{
 		out = 0;
 		for (k = 1; k < N; k++)
 		{
 			entrada[k - 1] = entrada[k]; //desplaza los valores
-			salida[k-1]=salida[k];
+			salida[k - 1] = salida[k];
 		}
-		salida[N-1]=0;
+		salida[N - 1] = 0;	//en principio se pone en cero para que no se calcule
 		fscanf(archivo_original, "%f", &entrada[N - 1]);
 		for (k = 0; k < N; k++)
 		{
-			out = out + (num[k] * entrada[k])-(den[k]*salida[k]); //realiza el calculo
+			out = out + (num[k] * entrada[k]) - (den[k] * salida[k]); //realiza el calculo
 		}
-		salida[N-1]=out;
+		salida[N - 1] = out;	//finalmente se asigna el valor de salida actual al arreglo
 		fprintf(archivo_nuevo, "%.3f\n", out);
 	}
 
 	fclose(archivo_nuevo); //cierra el archivo nuevo
 	rewind(archivo_original);
 }
+
 int main(int argc, char *argv[])
 {
 
 	int N, i;
 	FILE *arch;
 	FILE *filtroarch;
-	//int *numerador; 
 	float *denominador;
-	//float *filtro;
-	//N = 5;
-	//TODO: reemplazar por getopt
+	//TODO: reemplazar argc por getopt
 	if (argc == 3)
 	{
 		printf("Se aplicara el filtro %s a la senial %s\n", argv[1], argv[2]);
@@ -123,26 +119,36 @@ int main(int argc, char *argv[])
 		printf("(No se debe incluir la terminacion .txt de los archivos)\n\n\n");
 		printf("IMPORTANTE: el archivo de filtros debe tener la siguiente forma:\n");
 		printf("b(n-5)\nb(n-4)\n...\nb(n)\n\nY si es IIR luego \n\na(n-5)\n...\na(n)");
-		
+
 		return (1);
 	}
-	filtroarch = abrir_archivo("r", argv[1], ""); //abre archivo
-	arch = abrir_archivo("r", argv[2], "");		  //abre archivo
-	N = contar_lineas(filtroarch);
+	filtroarch = abrir_archivo("r", argv[1], ""); //abre archivo del filtro
+	arch = abrir_archivo("r", argv[2], "");		  //abre archivo de la señal
+	N = contar_lineas(filtroarch);	//cuenta los valores del filtro
+
+	/*ATENCION: supone siempre que el filtro es de cuarto orden, por lo tanto
+	el numerador siempre tendra 5 terminos. Si es un filtro FIR, sus denominadores
+	siempre seran 0, si es IIR los siguientes 5 valores del archivo del filtro seran
+	el denominador. Por lo tanto, el archivo siempre debe tener 5 o 10 valores.
+	Cualquier archivo con valores distintos a esto casi con seguridad fallará*/
+
 	printf("Numerador: \n");
 	float *numerador = carga_filtro(filtroarch, 5, 0);
-	if (N == 5){
+	if (N == 5)
+	{
 		printf("Filtro FIR, no tiene denominador\n");
-		for(i=0;i<N;i++){
-			denominador[i]=0;
+		for (i = 0; i < N; i++)
+		{
+			denominador[i] = 0;
 		}
-	}else{
+	}
+	else
+	{
 		printf("Denominador:\n");
 		denominador = carga_filtro(filtroarch, N, 5);
 	}
-
+	fclose(filtroarch);
 	filtrado(arch, numerador, denominador, 5, argv[2], argv[1]);
-	// transformada(arch, offset, N, argv[1]);
 	fclose(arch);
-	printf("Transformada calculada con exito.\n");
+	printf("Filtro aplicado con exito.\n");
 }
