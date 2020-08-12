@@ -19,6 +19,7 @@ load('filtros.mat');    %se carga el archivo con los valores de los filtros
 
 nombre_senial="OndaCuadrada";
 nombre_filtro="FiltroFIR_HP150Hz";filtro=FiltroFIR_HP150Hz;
+%la funcion filtroFIR realiza todas las operaciones para el filtro dado
 filtroFIR(nombre_filtro,filtro,nombre_senial,puntos,offset);
 
 nombre_filtro="FiltroFIR_BP40_100Hz";filtro=FiltroFIR_BP40_100Hz;
@@ -28,8 +29,10 @@ nombre_filtro="FiltroFIR_LP40Hz";filtro=FiltroFIR_LP40Hz;
 filtroFIR(nombre_filtro,filtro,nombre_senial,puntos,offset);
 
 %% filtros IIR
-[a,b]=sos2tf(SOSHP150Hz,GHP150Hz);  %transforma de la ecuacion 
-FiltroIIR_HP150Hz=[b a];
+%con filterDesigner se exportaba el filtro IIR como una
+%matriz SOS y un vector de ganancia G, eso se paso a una FT
+[a,b]=sos2tf(SOSHP150Hz,GHP150Hz);   
+FiltroIIR_HP150Hz=[b a];        %Y luego numerador y denominador se unieron
 [a,b]=sos2tf(SOSBP,GBP);
 FiltroIIR_BP40_100Hz=[b a];
 [a,b]=sos2tf(SOSLP40Hz,GLP40Hz);
@@ -45,27 +48,30 @@ nombre_filtro="FiltroIIR_LP40Hz";filtro=FiltroIIR_LP40Hz;
 filtroFIR(nombre_filtro,filtro,nombre_senial,puntos,offset);
 %% funcion utilizada
 function filtroFIR(nombre_filtro,filtro,nombre_senial,puntos,offset)
-extra1="_Transformada";extra2="Puntos";
-arch = fopen(nombre_filtro+".txt", 'wt');
-for i=length(filtro):-1:1
-fprintf(arch, '%.10f\n', filtro(i));
+extra1="_Transformada";extra2="Puntos";%variables extra para nombres
+arch = fopen(nombre_filtro+".txt", 'wt');%abre un archivo con el nombre del filtro
+for i=length(filtro):-1:1               %y lo guarda de atras para adelante
+fprintf(arch, '%.10f\n', filtro(i));    %para facilitar el procesado en C
 end
 fclose(arch);  
-system("DSP4.exe "+nombre_filtro+" "+nombre_senial);
-original=load(nombre_senial+".txt");
-filtrado=load(nombre_senial+nombre_filtro+".txt");
-figure();
+system("DSP4.exe "+nombre_filtro+" "+nombre_senial);    
+%ejecuta el programa en C con el nombre del filtro y el nombre de la señal
+original=load(nombre_senial+".txt");        %luego, carga ambos archivos
+filtrado=load(nombre_senial+nombre_filtro+".txt");  %el original y el filtrado
+figure();   %grafica ambas señales
 subplot(211);
 plot(original(2:length(original))); xlim([100 500]);grid on;
 title("Señal original "+nombre_senial);
 subplot(212);
 plot(filtrado(2:length(filtrado))); xlim([100 500]);grid on;
 title("Señal original "+nombre_senial+" con el filtro "+nombre_filtro+" aplicado");
+%luego, realiza la transformada de ambas señales, la original y la filtrada
 system("..\DSP3\DSP3.exe "+nombre_senial+" "+puntos+" "+offset)
 system("..\DSP3\DSP3.exe "+nombre_senial+nombre_filtro+" "+puntos+" "+offset)
+%vuelve a cargarlas
 original=load(nombre_senial+extra1+puntos+extra2+".txt");
 filtrado=load(nombre_senial+nombre_filtro+extra1+puntos+extra2+".txt");
-figure();
+figure();   %y grafica los resultados
 subplot(211);
 plot(original(2:length(original))); xlim([1 puntos]);grid on;
 title("Transformada de la señal "+nombre_senial+" con "+puntos+" puntos");
@@ -73,12 +79,4 @@ subplot(212);
 plot(filtrado(2:length(filtrado)));  xlim([1 puntos]);grid on;
 title("Transformada de la señal "+nombre_senial+" filtrada con "+puntos+" puntos");
 
-end
-
-
-function graficacionfunciones(nombre,offset,puntos,extra1,extra2) %%abre el archivo y lo grafica
-arch=load(nombre+extra1+puntos+extra2+".txt"); 
-plot(arch(2:length(arch)));
-title("Transformada del archivo '"+nombre+"' con "+puntos+" puntos");   %Agrega titulo
-grid on;xlim([1 puntos]);
 end
