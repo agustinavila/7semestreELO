@@ -24,10 +24,6 @@ FILE *abrir_archivo(char modo[], char nombre[], char extra[]) //abre los archivo
 	{
 		printf("No se pudo abrir el archivo \"%s%s.txt\"\n", nombre, extra); //no tiene mucho sentido porque no hace nada
 	}
-	else
-	{
-		printf("Se abrio el archivo \"%s%s.txt\" correctamente\n", nombre, extra); //no tiene mucho sentido porque no hace nada
-	}
 	return archivo;
 }
 int contar_lineas(FILE *archivo)
@@ -37,11 +33,9 @@ int contar_lineas(FILE *archivo)
 	while (!feof(archivo))
 	{
 		fscanf(archivo, "%f\n", &numero); //revisar esto
-		printf("%.2f\n", numero);
 		n++;
 	}
 	rewind(archivo);
-	printf("%d\n", n);
 	return n;
 }
 float *carga_filtro(FILE *archfiltro, int N)
@@ -73,10 +67,8 @@ void filtrado(FILE *archivo_original, float filtro[], int N, char nombre[], char
 	{
 		entrada[k] = 0; //coloca todos los valores en cero
 	}
-	printf("termina de inicializar la entrada\n");
 	while (!feof(archivo_original)) //lee una nueva linea
 	{
-		printf("entra al while\n");
 		salida = 0;
 		for (k = 1; k < N; k++)
 		{
@@ -84,7 +76,6 @@ void filtrado(FILE *archivo_original, float filtro[], int N, char nombre[], char
 		}
 
 		fscanf(archivo_original, "%f", &entrada[N - 1]);
-		printf("%.1f %.1f %.1f %.1f %.1f \n", entrada[0], entrada[1], entrada[2], entrada[3], entrada[4]);
 		for (k = 0; k < N; k++)
 		{
 			salida = salida + (filtro[k] * entrada[k]); //realiza el calculo
