@@ -2,34 +2,10 @@
 % Julio 2020
 % Reg 26076 - ELO
 %clc;clear all;
-extra1="_Transformada";extra2="Puntos";
-%% Punto 2
-% Nombres=["Tono_20Hz","Tono_50Hz","Tono_200Hz"];
-% puntos=[8 16 256]; n=length(puntos);
-% for i=1:3
-%     figure("Name",Nombres(i));    %genera la figura
-%     nombre=Nombres(i); offset=20;
-%     for j=1:n
-%         subplot((n*100)+10+j);
-%         system("DSP3.exe "+nombre+" "+puntos(j)+" "+offset); %Corre el archivo
-%         graficacionfunciones(nombre,offset,puntos(j),extra1,extra2);
-%     end
-% end
-% n=n-1;
-% for i=1:3
-%     figure("Name",Nombres(i));    %genera la figura
-%     nombre=Nombres(i); offset=20;
-%     for j=1:n
-%         subplot((n*100)+10+j);
-%         system("DSP3.exe "+nombre+" "+puntos(j)+" "+offset); %Corre el archivo
-%         graficacionfunciones(nombre,offset,puntos(j),extra1,extra2);
-%         hold on;
-%         graficacionfunciones(nombre+"Arduino",offset,puntos(j),extra1,extra2);
-%         legend('Transformada en C','Transformada en Arduino');
-%     end
-% end
 
-%% Punto 3
+puntos=512; offset=10;
+load('filtros.mat');    %se carga el archivo con los valores de los filtros
+%% Punto 1
 % hz1=load("Tono_50Hz.txt");
 % hz2=load("Tono_20Hz.txt");
 % hz3=load("Tono_200Hz.txt");
@@ -40,32 +16,66 @@ extra1="_Transformada";extra2="Puntos";
 % fprintf(arch, '%.5f\n', (hz1(i)+hz2(i)+hz3(i)));
 % end
 % fclose(arch);
-arch = fopen('FiltroFIR_LP40Hz.txt', 'wt');
-for i=1:length(FiltroFIR_LP40Hz)
-fprintf(arch, '%.5f\n', FiltroFIR_LP40Hz(i));
+
+nombre_senial="OndaCuadrada";
+nombre_filtro="FiltroFIR_HP150Hz";filtro=FiltroFIR_HP150Hz;
+filtroFIR(nombre_filtro,filtro,nombre_senial,puntos,offset);
+
+nombre_filtro="FiltroFIR_BP40_100Hz";filtro=FiltroFIR_BP40_100Hz;
+filtroFIR(nombre_filtro,filtro,nombre_senial,puntos,offset);
+
+nombre_filtro="FiltroFIR_LP40Hz";filtro=FiltroFIR_LP40Hz;
+filtroFIR(nombre_filtro,filtro,nombre_senial,puntos,offset);
+
+%% filtros IIR
+[a,b]=sos2tf(SOSHP150Hz,GHP150Hz);  %transforma de la ecuacion 
+FiltroIIR_HP150Hz=[b a];
+[a,b]=sos2tf(SOSBP,GBP);
+FiltroIIR_BP40_100Hz=[b a];
+[a,b]=sos2tf(SOSLP40Hz,GLP40Hz);
+FiltroIIR_LP40Hz=[b a];
+
+nombre_filtro="FiltroIIR_HP150Hz";filtro=FiltroIIR_HP150Hz;
+filtroFIR(nombre_filtro,filtro,nombre_senial,puntos,offset);
+
+nombre_filtro="FiltroIIR_BP40_100Hz";filtro=FiltroIIR_BP40_100Hz;
+filtroFIR(nombre_filtro,filtro,nombre_senial,puntos,offset);
+
+nombre_filtro="FiltroIIR_LP40Hz";filtro=FiltroIIR_LP40Hz;
+filtroFIR(nombre_filtro,filtro,nombre_senial,puntos,offset);
+%% funcion utilizada
+function filtroFIR(nombre_filtro,filtro,nombre_senial,puntos,offset)
+extra1="_Transformada";extra2="Puntos";
+arch = fopen(nombre_filtro+".txt", 'wt');
+for i=length(filtro):-1:1
+fprintf(arch, '%.10f\n', filtro(i));
 end
 fclose(arch);  
-system("DSP4.exe FiltroFIR_LP40Hz Tono_Suma");
-original=load("Tono_Suma.txt");
-filtrado=load("Tono_SumaFiltroFIR_LP40Hz.txt");
+system("DSP4.exe "+nombre_filtro+" "+nombre_senial);
+original=load(nombre_senial+".txt");
+filtrado=load(nombre_senial+nombre_filtro+".txt");
 figure();
 subplot(211);
-plot(original(2:length(original)));
+plot(original(2:length(original))); xlim([100 500]);grid on;
+title("Señal original "+nombre_senial);
 subplot(212);
-plot(filtrado(2:length(filtrado)));
-system("..\DSP3\DSP3.exe Tono_Suma 512 10")
-system("..\DSP3\DSP3.exe Tono_SumaFiltroFIR_LP40Hz 512 10")
-original=load("Tono_Suma_Transformada512Puntos.txt");
-filtrado=load("Tono_SumaFiltroFIR_LP40Hz_Transformada512Puntos.txt");
+plot(filtrado(2:length(filtrado))); xlim([100 500]);grid on;
+title("Señal original "+nombre_senial+" con el filtro "+nombre_filtro+" aplicado");
+system("..\DSP3\DSP3.exe "+nombre_senial+" "+puntos+" "+offset)
+system("..\DSP3\DSP3.exe "+nombre_senial+nombre_filtro+" "+puntos+" "+offset)
+original=load(nombre_senial+extra1+puntos+extra2+".txt");
+filtrado=load(nombre_senial+nombre_filtro+extra1+puntos+extra2+".txt");
 figure();
 subplot(211);
-plot(original(2:length(original)));
+plot(original(2:length(original))); xlim([1 puntos]);grid on;
+title("Transformada de la señal "+nombre_senial+" con "+puntos+" puntos");
 subplot(212);
-plot(filtrado(2:length(filtrado)));
+plot(filtrado(2:length(filtrado)));  xlim([1 puntos]);grid on;
+title("Transformada de la señal "+nombre_senial+" filtrada con "+puntos+" puntos");
+
+end
 
 
-
-%% funcion utilizada
 function graficacionfunciones(nombre,offset,puntos,extra1,extra2) %%abre el archivo y lo grafica
 arch=load(nombre+extra1+puntos+extra2+".txt"); 
 plot(arch(2:length(arch)));
