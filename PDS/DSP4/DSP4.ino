@@ -3,8 +3,16 @@
 //Reg 26076 - ELO
 const int Ts = 1; //Tiempo de Muestreo en milisegundos
 const int N = 5;  //cantidad de puntos
+//numerador y denominador del filtro IIR pasabajo de 40Hz:
 const float num[N] = {0.0001832160, 0.0007328641, 0.0010992961, 0.0007328641, 0.0001832160};
 const float den[N] = {0.5174781998, -2.4093428566, 4.2388639509, -3.3440678377, 1.0000000000};
+//Filtro IIR pasabanda:
+//0.0278597661, 0.0000000000, -0.0557195322, 0.0000000000, 0.0278597661
+//0.5869195081, -2.4404021492, 4.0739405159, -3.2014145794, 1.0000000000
+
+//Filtro IIR pasa alto
+//0.2754132881, -1.1016531523, 1.6524797284, -1.1016531523, 0.2754132881
+//0.0761970646, -0.4844033683, 1.2756133250, -1.5703988512, 1.0000000000
 void setup()
 {
 	delay(10); //solo por si el generador tiene un transitorio
