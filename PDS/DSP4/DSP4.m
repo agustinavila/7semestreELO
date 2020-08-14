@@ -4,6 +4,7 @@
 clc;clear all;
 load('filtros.mat');    %se carga el archivo con los valores de los filtros
 %% Punto 1
+
 FiltrosFIR=[FiltroFIR_HP150Hz;FiltroFIR_BP40_100Hz;FiltroFIR_LP40Hz];
 
 %con filterDesigner se exportaba el filtro IIR como una
@@ -19,7 +20,7 @@ FiltrosIIR=[FiltroIIR_HP150Hz;FiltroIIR_BP40_100Hz;FiltroIIR_LP40Hz];
 nombre_senial=["OndaCuadrada","Perro"];
 puntos=[512 4096];
 offset=[10 500];
-for j=1:2
+for j=1:length(nombre_senial)
     Nombres=["FiltroFIR_HP150Hz","FiltroFIR_BP40_100Hz","FiltroFIR_LP40Hz"];
     n=length(Nombres);
     for i=1:n
@@ -46,6 +47,30 @@ for i=1:n
 end
 
 
+%% Realizacion del ecualizador
+puntos=2048; ts=11025;
+Gtotal=eye(5);  %Matriz identidad para probar cada filtro
+for i=1:5
+    ganancia=Gtotal(i,:);   %selecciona la columna I
+    sim('ecualizador.slx');
+    transformada=fft(Salida.Data,puntos);
+    figure();
+    plot((1:puntos),abs(transformada)); grid; xlim([1 puntos/2]);
+    title("Respuesta frecuencial en la banda "+i);
+end
+puntos=4096;
+ganancia=[1 1 1 1 1];       %Ganancias unitarias
+sim('ecualizador.slx');
+transformada=fft(Salida.Data,puntos);
+figure();
+plot((1:puntos),abs(transformada));
+ganancia=[.001 4 8 2 .1]; %distintas ganancias por banda
+sim('ecualizador.slx');
+transformada=fft(Salida.Data,puntos);
+hold on; grid on; 
+plot((1:puntos),abs(transformada));xlim([1 puntos/2]);
+legend("Señal con ganancias unitarias","Señal con distintas ganancias");
+title("Comparacion entre señal original y con distintas ganancias");
 %% funciones utilizadas
 function filt(nombre_filtro,filtro,nombre_senial,puntos,offset)
     extra1="_Transformada";extra2="Puntos";%variables extra para nombres
